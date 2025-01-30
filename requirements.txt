@@ -1,0 +1,14 @@
+aiohttp
+numpy
+tqdm
+distro
+transformers
+lmdb
+decord
+fastapi
+hf_transfer
+huggingface_hub
+packaging
+psutil
+uvloop
+py-cpuinfo
