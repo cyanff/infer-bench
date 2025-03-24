@@ -1,4 +1,5 @@
 from dataclasses import dataclass
+from typing import Optional
 
 
 @dataclass
@@ -15,3 +16,4 @@ class BenchmarkConfig:
     min_cd: int
     max_cd: int
     time: int
+    served_model_name: Optional[str] = None

@@ -57,6 +57,7 @@ class Simulation:
     min_completion: int = 130
     max_completion: int = 250
     max_prompt: int = 2048
+    served_model_name: Optional[str] = None
 
     def __post_init__(self):
         self.cache_key = "simulation-turn"
@@ -135,6 +136,7 @@ class Simulation:
                 backend_kind=self.backend_kind,
                 prompt=prompt,
                 max_new_tokens=max_new_tokens,
+                served_model_name=self.served_model_name or self.model,
             )
             self.turn_results.append(
                 SimulationTurnResult(

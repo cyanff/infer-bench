@@ -102,13 +102,27 @@ async def request(
     max_new_tokens: int,
     backend_kind: str,
     model: str,
+    served_model_name: Optional[str] = None,
 ) -> RequestResult:
     adapter: Adapter
+    served_model = served_model_name or model
+
+    # Backend configurations
+    backend_hosts = {
+        "sglang": ("127.0.0.1", "30000"),
+        "lmdeploy": ("127.0.0.1", "8080"),
+        "vllm": ("127.0.0.1", "8000"),
+    }
+
+    host, port = backend_hosts.get(backend_kind, ("0.0.0.0", "8080"))
+
     match backend_kind:
         case "sglang":
-            adapter = SGLang(model, "0.0.0.0", "30000")
+            adapter = SGLang(served_model, host, port)
         case "lmdeploy":
-            adapter = OpenAI(model, "0.0.0.0", "8080")
+            adapter = OpenAI(served_model, host, port)
+        case "vllm":
+            adapter = OpenAI(served_model, host, port)
         case _:
             raise Exception(f"Unknown backend kind: {backend_kind}")
     api_url = adapter.api_url

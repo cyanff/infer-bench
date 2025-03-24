@@ -22,6 +22,7 @@ It should:
 backend_config = {
     "sglang": {"host": "127.0.0.1", "port": "30000"},
     "lmdeploy": {"host": "127.0.0.1", "port": "8080"},
+    "vllm": {"host": "127.0.0.1", "port": "8000"},
 }
 
 
@@ -33,9 +34,15 @@ def parse_args() -> BenchmarkConfig:
         "--model", type=str, help="Model to use for simulation (optional)", default=None
     )
     parser.add_argument(
+        "--served-model-name",
+        type=str,
+        help="Model name to request from the inference API (defaults to --model if not specified)",
+        default=None,
+    )
+    parser.add_argument(
         "--backend",
         type=str,
-        help="The backend to benchmark, i.e 'sglang', 'lmdeploy'.",
+        help="The backend to benchmark, i.e 'sglang', 'lmdeploy', 'vllm'.",
     )
     parser.add_argument("--host", type=str, help="Ex: 127.0.0.1")
     parser.add_argument("--port", type=str, help="Ex: 8080")
@@ -99,6 +106,7 @@ def parse_args() -> BenchmarkConfig:
         min_cd=args.min_cd,
         max_cd=args.max_cd,
         time=args.time,
+        served_model_name=args.served_model_name,
     )
 
 
@@ -118,6 +126,7 @@ async def main():
         max_cd=cfg.max_cd,
         min_completion=cfg.min_completion,
         max_completion=cfg.max_completion,
+        served_model_name=cfg.served_model_name,
     )
     sim_res = await sim.boot()
     res = process_result(result=sim_res, tokenizer=tokenizer)
