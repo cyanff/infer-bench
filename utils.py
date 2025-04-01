@@ -26,15 +26,79 @@ def remove_prefix(text: str, prefix: str) -> str:
 
 
 def sample_gaussian_integer(min_val, max_val, mean=None, std=None):
+    """
+    Generate a random integer from a Gaussian-like distribution within specified bounds.
+    
+    Uses numpy's random.normal when available for efficiency, with fallback to a safer
+    implementation of Box-Muller transform that handles edge cases better.
+    
+    Args:
+        min_val: Minimum acceptable value (inclusive)
+        max_val: Maximum acceptable value (inclusive)
+        mean: Center of distribution (defaults to midpoint of range)
+        std: Standard deviation (defaults to range/6 for ~99.7% coverage)
+    
+    Returns:
+        An integer within the specified bounds
+    """
+    import time
+    
+    # Validate inputs to avoid issues
+    min_val = int(min_val)
+    max_val = int(max_val)
+    
+    if min_val > max_val:
+        min_val, max_val = max_val, min_val
+    
+    if min_val == max_val:
+        return min_val
+    
     if mean is None:
         mean = (min_val + max_val) / 2
     if std is None:
-        std = (max_val - min_val) / 6
-
-    while True:
+        std = max(1, (max_val - min_val) / 6)  # Ensure std is at least 1
+    
+    # Set a maximum number of attempts to avoid infinite loops
+    max_attempts = 100
+    attempts = 0
+    
+    # Try the faster numpy approach first
+    try:
         sample = int(round(np.random.normal(mean, std)))
+        # If it's within bounds, return it
         if min_val <= sample <= max_val:
             return sample
+    except Exception:
+        # If numpy's normal fails, we'll use the fallback below
+        pass
+    
+    # Fallback to a more robust custom implementation
+    while attempts < max_attempts:
+        attempts += 1
+        try:
+            # Box-Muller transform with additional safety checks
+            u1 = np.random.random()
+            if u1 < 1e-10:  # Avoid log(0)
+                u1 = 1e-10
+                
+            u2 = np.random.random()
+            
+            # Generate normal random variable
+            z = np.sqrt(-2 * np.log(u1)) * np.cos(2 * np.pi * u2)
+            
+            # Transform to desired mean and standard deviation
+            sample = int(round(mean + z * std))
+            
+            # Only return if within bounds
+            if min_val <= sample <= max_val:
+                return sample
+                
+        except Exception as e:
+            # If we hit any numerical errors, try again
+            continue
+    
+    # If we've exceeded the maximum attempts, just return a uniform random integer
+    return np.random.randint(min_val, max_val + 1)
 
 
 # Todo: this should belong in the adapter classes
@@ -72,36 +136,59 @@ def is_notebook():
 
 def download_and_cache_file(url: str, filename: Optional[str] = None):
     """Read and cache a file from a url."""
+    import time
+    start_time = time.time()
+    
     if filename is None:
         filename = os.path.join("/tmp", url.split("/")[-1])
 
     # Check if the cache file already exists
     if os.path.exists(filename):
+        file_size = os.path.getsize(filename)
+        print(f"Using cached file at {filename} ({file_size / (1024*1024):.2f} MB)")
         return filename
 
-    print(f"Downloading from {url} to {filename}")
+    print(f"[{time.time() - start_time:.2f}s] Downloading from {url} to {filename}")
 
-    # Stream the response to show the progress bar
-    response = requests.get(url, stream=True)
-    response.raise_for_status()  # Check for request errors
+    try:
+        # Stream the response to show the progress bar
+        response = requests.get(url, stream=True, timeout=60)  # Add timeout
+        response.raise_for_status()  # Check for request errors
 
-    # Total size of the file in bytes
-    total_size = int(response.headers.get("content-length", 0))
-    chunk_size = 1024  # Download in chunks of 1KB
+        # Total size of the file in bytes
+        total_size = int(response.headers.get("content-length", 0))
+        print(f"[{time.time() - start_time:.2f}s] File size: {total_size / (1024*1024):.2f} MB")
+        chunk_size = 8192  # Increased chunk size for better performance (8KB)
 
-    # Use tqdm to display the progress bar
-    with open(filename, "wb") as f, tqdm(
-        desc=filename,
-        total=total_size,
-        unit="B",
-        unit_scale=True,
-        unit_divisor=1024,
-    ) as bar:
-        for chunk in response.iter_content(chunk_size=chunk_size):
-            f.write(chunk)
-            bar.update(len(chunk))
-
-    return filename
+        # Use tqdm to display the progress bar
+        with open(filename, "wb") as f, tqdm(
+            desc=filename,
+            total=total_size,
+            unit="B",
+            unit_scale=True,
+            unit_divisor=1024,
+        ) as bar:
+            download_start = time.time()
+            bytes_downloaded = 0
+            for chunk in response.iter_content(chunk_size=chunk_size):
+                f.write(chunk)
+                bytes_downloaded += len(chunk)
+                bar.update(len(chunk))
+                
+                # Log progress every 10MB
+                if bytes_downloaded % (10 * 1024 * 1024) < chunk_size:
+                    elapsed = time.time() - download_start
+                    speed = bytes_downloaded / (1024 * 1024 * elapsed) if elapsed > 0 else 0
+                    print(f"[{time.time() - start_time:.2f}s] Downloaded {bytes_downloaded / (1024*1024):.2f} MB at {speed:.2f} MB/s")
+            
+        print(f"[{time.time() - start_time:.2f}s] Download completed")
+        return filename
+    except Exception as e:
+        print(f"[{time.time() - start_time:.2f}s] Download failed: {str(e)}")
+        # If the file was partially created, remove it
+        if os.path.exists(filename):
+            os.remove(filename)
+        raise
 
 
 def set_fd_limit(target=65535):

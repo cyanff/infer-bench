@@ -9,6 +9,8 @@ import time
 import warnings
 import aiohttp
 from queue import Queue
+import os
+import psutil
 from request import request
 from utils import sample_gaussian_integer, set_fd_limit
 from data import get_conversations
@@ -153,58 +155,154 @@ class Simulation:
         pass
 
     def _prepare(self) -> List[List[SimulationTurn]]:
-        conversations = get_conversations(5000)
+        import time
+        import gc
+        import sys
+        
+        start_time = time.time()
+        print(f"[{0:.2f}s] Starting simulation preparation")
+        
+        # Try to print tokenizer info to debug
+        try:
+            print(f"[{time.time() - start_time:.2f}s] Tokenizer: {self.tokenizer.__class__.__name__}, model_max_length: {self.tokenizer.model_max_length}")
+        except Exception as e:
+            print(f"[{time.time() - start_time:.2f}s] Failed to get tokenizer info: {str(e)}")
+            
+        print(f"[{time.time() - start_time:.2f}s] Getting conversations")
+        conversations = get_conversations(1000)  # Reduced from 5000 to 1000 for testing
+        print(f"[{time.time() - start_time:.2f}s] Got {len(conversations)} conversations")
+        
         processed: List[List[SimulationTurn]] = []
+        
+        print(f"[{time.time() - start_time:.2f}s] Checking cache")
         if self.cache:
+            print(f"[{time.time() - start_time:.2f}s] Reading from cache key: {self.cache_key}")
             cached = self.cache.get(self.cache_key) or []
+            cached_len = len(cached)
+            print(f"[{time.time() - start_time:.2f}s] Cache read, found {cached_len} items")
+            
             # Only use the prompt and prompt_len from the cache
-            for convo in cached:
+            for i, convo in enumerate(cached):
+                if i % 100 == 0 and i > 0:
+                    print(f"[{time.time() - start_time:.2f}s] Processed {i}/{cached_len} cached conversations")
+                    
                 simulation_turns: List[SimulationTurn] = []
                 for turn in convo:
-                    simulation_turns.append(
-                        SimulationTurn(
-                            prompt=turn.prompt,
-                            prompt_len=turn.prompt_len,
-                            max_new_tokens=sample_gaussian_integer(
-                                self.min_completion, self.max_completion
-                            ),
-                            cd=sample_gaussian_integer(self.min_cd, self.max_cd),
+                    try:
+                        # Check if we can generate the values properly
+                        max_tokens = sample_gaussian_integer(
+                            self.min_completion, self.max_completion
                         )
-                    )
+                        cooldown = sample_gaussian_integer(self.min_cd, self.max_cd)
+                        
+                        simulation_turns.append(
+                            SimulationTurn(
+                                prompt=turn.prompt,
+                                prompt_len=turn.prompt_len,
+                                max_new_tokens=max_tokens,
+                                cd=cooldown,
+                            )
+                        )
+                    except Exception as e:
+                        print(f"[{time.time() - start_time:.2f}s] Error with cached turn: {str(e)}")
+                        
                 processed.append(simulation_turns)
 
         if len(processed) > 0:
-            print(f"Simulation turns cache hit! Len: {len(processed)}")
+            print(f"[{time.time() - start_time:.2f}s] Simulation turns cache hit! Len: {len(processed)}")
 
         offset = len(processed)
-        for convo in tqdm(conversations[offset:], desc="Processing conversations..."):
-            context: Queue[int] = Queue()
-            turns: List[SimulationTurn] = []
-            for turn in convo:
-                # gpt turn, we want to get *all* the previous messages and use it as a prompt,
-                # deleting tokens from the beginning it if it's pass max_prompt
-                if turn.from_ == "gpt":
-                    # get rid of extra tokens at the front of the queue
-                    while context.qsize() > self.max_prompt:
-                        context.get()
+        print(f"[{time.time() - start_time:.2f}s] Starting to process {len(conversations) - offset} new conversations")
+        
+        # Force garbage collection before intensive processing
+        gc.collect()
+        
+        conversation_count = len(conversations[offset:])
+        for i, convo in enumerate(tqdm(conversations[offset:], desc="Processing conversations...")):
+            if i % 10 == 0:
+                # Print memory usage
+                process = psutil.Process(os.getpid())
+                mem_info = process.memory_info()
+                mem_usage_mb = mem_info.rss / (1024 * 1024)
+                print(f"[{time.time() - start_time:.2f}s] Processing conversation {i}/{conversation_count}, mem usage: {mem_usage_mb:.2f} MB")
+                
+                # Force garbage collection periodically
+                if i % 100 == 0 and i > 0:
+                    gc.collect()
+                
+            try:
+                context: Queue[int] = Queue()
+                turns: List[SimulationTurn] = []
+                
+                for j, turn in enumerate(convo):
+                    try:
+                        # gpt turn, we want to get *all* the previous messages and use it as a prompt,
+                        # deleting tokens from the beginning it if it's pass max_prompt
+                        if turn.from_ == "gpt":
+                            context_size = context.qsize()
+                            
+                            # Debug extremely large contexts
+                            if context_size > 10000:
+                                print(f"[{time.time() - start_time:.2f}s] Very large context: {context_size} tokens")
+                                
+                            # get rid of extra tokens at the front of the queue
+                            tokens_removed = 0
+                            while context.qsize() > self.max_prompt:
+                                context.get()
+                                tokens_removed += 1
+                                
+                            if tokens_removed > 0 and tokens_removed % 1000 == 0:
+                                print(f"[{time.time() - start_time:.2f}s] Removed {tokens_removed} tokens from context")
 
-                    prompt = self.tokenizer.decode(list(context.queue))
-                    sim_turn = SimulationTurn(
-                        prompt=prompt,
-                        prompt_len=context.qsize(),
-                        max_new_tokens=sample_gaussian_integer(
-                            self.min_completion, self.max_completion
-                        ),
-                        cd=sample_gaussian_integer(self.min_cd, self.max_cd),
-                    )
-                    turns.append(sim_turn)
+                            # This is potentially slow for large contexts - convert queue to list
+                            queue_list = list(context.queue)
+                            
+                            # Debug token decoding
+                            decode_start = time.time()
+                            prompt = self.tokenizer.decode(queue_list)
+                            decode_time = time.time() - decode_start
+                            
+                            # Log slow decodes
+                            if decode_time > 1.0:
+                                print(f"[{time.time() - start_time:.2f}s] Slow decode: {decode_time:.2f}s for {len(queue_list)} tokens")
+                            
+                            sim_turn = SimulationTurn(
+                                prompt=prompt,
+                                prompt_len=context.qsize(),
+                                max_new_tokens=sample_gaussian_integer(
+                                    self.min_completion, self.max_completion
+                                ),
+                                cd=sample_gaussian_integer(self.min_cd, self.max_cd),
+                            )
+                            turns.append(sim_turn)
 
-                # Add new tokens to the context
-                for tok in self.tokenizer.encode(turn.value):
-                    context.put(tok)
-            processed.append(turns)
+                        # Add new tokens to the context
+                        encode_start = time.time()
+                        tokens = self.tokenizer.encode(turn.value)
+                        encode_time = time.time() - encode_start
+                        
+                        # Log slow encodes
+                        if encode_time > 1.0:
+                            print(f"[{time.time() - start_time:.2f}s] Slow encode: {encode_time:.2f}s for text length {len(turn.value)}")
+                            
+                        for tok in tokens:
+                            context.put(tok)
+                    except Exception as e:
+                        print(f"[{time.time() - start_time:.2f}s] Error processing turn {j} in conversation {i}: {str(e)}")
+                
+                processed.append(turns)
+                
+            except Exception as e:
+                print(f"[{time.time() - start_time:.2f}s] Error processing conversation {i}: {str(e)}")
 
-        if self.cache:
-            self.cache.set(self.cache_key, processed)
+        print(f"[{time.time() - start_time:.2f}s] Processing complete, total simulation turns: {len(processed)}")
+        
+        if self.cache and len(processed) > offset:
+            print(f"[{time.time() - start_time:.2f}s] Saving to cache")
+            try:
+                self.cache.set(self.cache_key, processed)
+                print(f"[{time.time() - start_time:.2f}s] Cache save complete")
+            except Exception as e:
+                print(f"[{time.time() - start_time:.2f}s] Failed to save to cache: {str(e)}")
 
         return processed
