@@ -33,6 +33,8 @@ def parse_args() -> BenchmarkConfig:
     parser.add_argument(
         "--model", type=str, help="Model to use for simulation (optional)", default=None
     )
+    parser.add_argument("--dataset-file", type=str, default=None,
+                        help="Use this JSONL dataset of conversations instead of the default c2.jsonl")
     parser.add_argument(
         "--served-model-name",
         type=str,
@@ -106,6 +108,7 @@ def parse_args() -> BenchmarkConfig:
         min_cd=args.min_cd,
         max_cd=args.max_cd,
         time=args.time,
+        dataset_file=args.dataset_file,
         served_model_name=args.served_model_name,
     )
 
@@ -127,6 +130,7 @@ async def main():
         min_completion=cfg.min_completion,
         max_completion=cfg.max_completion,
         served_model_name=cfg.served_model_name,
+        dataset_file=cfg.dataset_file,
     )
     sim_res = await sim.boot()
     res = process_result(result=sim_res, tokenizer=tokenizer)

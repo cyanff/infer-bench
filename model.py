@@ -16,4 +16,5 @@ class BenchmarkConfig:
     min_cd: int
     max_cd: int
     time: int
+    dataset_file: Optional[str] = None
     served_model_name: Optional[str] = None
