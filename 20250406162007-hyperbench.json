@@ -1,0 +1,570 @@
+{
+    "completed": 0,
+    "total_time": 0.00018692599951464217,
+    "total_input": 0,
+    "total_output": 0,
+    "request_throughput": 0.0,
+    "input_throughput": 0.0,
+    "output_throughput": 0.0,
+    "mean_ttft_ms": 0.0,
+    "p50_ttft_ms": 0.0,
+    "p75_ttft_ms": 0.0,
+    "p95_ttft_ms": 0.0,
+    "p99_ttft_ms": 0.0,
+    "std_ttft_ms": 0.0,
+    "mean_tpot_ms": 0.0,
+    "p50_tpot_ms": 0.0,
+    "p75_tpot_ms": 0.0,
+    "p95_tpot_ms": 0.0,
+    "p99_tpot_ms": 0.0,
+    "std_tpot_ms": 0.0,
+    "mean_itl_ms": 0.0,
+    "p50_itl_ms": 0.0,
+    "p75_itl_ms": 0.0,
+    "p95_itl_ms": 0.0,
+    "p99_itl_ms": 0.0,
+    "std_itl_ms": 0.0,
+    "mean_e2e_latency_ms": NaN,
+    "p50_e2e_latency_ms": NaN,
+    "errors": [],
+    "args": {
+        "model": "unsloth/Llama-3.2-1B-Instruct",
+        "backend": "vllm",
+        "tokenizer": "unsloth/Llama-3.2-1B-Instruct",
+        "ccu": 100,
+        "host": "127.0.0.1",
+        "port": "8000",
+        "max_prompt": 5000,
+        "min_completion": 25,
+        "max_completion": 65,
+        "min_cd": 7,
+        "max_cd": 14,
+        "time": 120,
+        "dataset_file": "./dataGen.jsonl",
+        "served_model_name": null
+    },
+    "system": {
+        "timestamp": "2025-04-06T16:20:07.996910",
+        "hostname": "Shark",
+        "os": {
+            "system": "Linux",
+            "release": "6.13.8-arch1-1",
+            "version": "#1 SMP PREEMPT_DYNAMIC Sun, 23 Mar 2025 17:17:30 +0000",
+            "machine": "x86_64",
+            "linux_distribution": {
+                "id": "arch",
+                "version": "rolling",
+                "version_parts": {
+                    "major": "",
+                    "minor": "",
+                    "build_number": ""
+                },
+                "like": "",
+                "codename": "n/a"
+            }
+        },
+        "cpu": {
+            "brand": "AMD Ryzen 5 5600 6-Core Processor",
+            "architecture": "X86_64",
+            "bits": 64,
+            "count_physical": 6,
+            "count_logical": 12,
+            "frequency_mhz": {
+                "current": 3667.845500000001,
+                "min": 1750.0,
+                "max": 4468.0
+            },
+            "load_percent": [
+                3.0,
+                4.0,
+                12.0,
+                3.0,
+                2.0,
+                5.9,
+                1.0,
+                3.0,
+                3.0,
+                1.0,
+                1.0,
+                4.0
+            ]
+        },
+        "memory": {
+            "total_gib": 31.262245178222656,
+            "available_gib": 19.895797729492188,
+            "used_gib": 6.585926055908203,
+            "free_gib": 10.389518737792969,
+            "percent_used": 36.4,
+            "swap": {
+                "total_gib": 3.9999961853027344,
+                "used_gib": 0.0,
+                "free_gib": 3.9999961853027344,
+                "percent_used": 0.0
+            }
+        },
+        "disk": {
+            "total_gib": 914.8318061828613,
+            "used_gib": 441.03293228149414,
+            "free_gib": 427.2576332092285,
+            "percent_used": 50.8
+        },
+        "network": {
+            "interfaces": {
+                "lo": [
+                    [
+                        2,
+                        "127.0.0.1",
+                        "255.0.0.0",
+                        null,
+                        null
+                    ],
+                    [
+                        10,
+                        "::1",
+                        "ffff:ffff:ffff:ffff:ffff:ffff:ffff:ffff",
+                        null,
+                        null
+                    ],
+                    [
+                        17,
+                        "00:00:00:00:00:00",
+                        null,
+                        null,
+                        null
+                    ]
+                ],
+                "enp2s0f0u2": [
+                    [
+                        2,
+                        "192.168.1.208",
+                        "255.255.255.0",
+                        "192.168.1.255",
+                        null
+                    ],
+                    [
+                        10,
+                        "fe80::b064:a6b:42e8:f30a%enp2s0f0u2",
+                        "ffff:ffff:ffff:ffff::",
+                        null,
+                        null
+                    ],
+                    [
+                        17,
+                        "00:05:1b:dd:74:5e",
+                        null,
+                        "ff:ff:ff:ff:ff:ff",
+                        null
+                    ]
+                ],
+                "tailscale0": [
+                    [
+                        2,
+                        "100.113.86.78",
+                        "255.255.255.255",
+                        null,
+                        "100.113.86.78"
+                    ],
+                    [
+                        10,
+                        "fd7a:115c:a1e0::6f01:564e",
+                        "ffff:ffff:ffff:ffff:ffff:ffff:ffff:ffff",
+                        null,
+                        null
+                    ],
+                    [
+                        10,
+                        "fe80::244a:ccb9:d009:e12f%tailscale0",
+                        "ffff:ffff:ffff:ffff::",
+                        null,
+                        null
+                    ]
+                ],
+                "docker0": [
+                    [
+                        2,
+                        "172.17.0.1",
+                        "255.255.0.0",
+                        "172.17.255.255",
+                        null
+                    ],
+                    [
+                        10,
+                        "fe80::4cdc:9bff:fea8:7ad7%docker0",
+                        "ffff:ffff:ffff:ffff::",
+                        null,
+                        null
+                    ],
+                    [
+                        17,
+                        "4e:dc:9b:a8:7a:d7",
+                        null,
+                        "ff:ff:ff:ff:ff:ff",
+                        null
+                    ]
+                ],
+                "br-3d12411537e7": [
+                    [
+                        2,
+                        "172.18.0.1",
+                        "255.255.0.0",
+                        "172.18.255.255",
+                        null
+                    ],
+                    [
+                        10,
+                        "fe80::f00d:4dff:febc:1e8a%br-3d12411537e7",
+                        "ffff:ffff:ffff:ffff::",
+                        null,
+                        null
+                    ],
+                    [
+                        17,
+                        "f2:0d:4d:bc:1e:8a",
+                        null,
+                        "ff:ff:ff:ff:ff:ff",
+                        null
+                    ]
+                ],
+                "br-8120fb3e5a75": [
+                    [
+                        2,
+                        "172.19.0.1",
+                        "255.255.0.0",
+                        "172.19.255.255",
+                        null
+                    ],
+                    [
+                        10,
+                        "fe80::80c8:ffff:feae:df8f%br-8120fb3e5a75",
+                        "ffff:ffff:ffff:ffff::",
+                        null,
+                        null
+                    ],
+                    [
+                        17,
+                        "82:c8:ff:ae:df:8f",
+                        null,
+                        "ff:ff:ff:ff:ff:ff",
+                        null
+                    ]
+                ],
+                "vethcc31ca0": [
+                    [
+                        10,
+                        "fe80::bcf9:e8ff:fe3a:e351%vethcc31ca0",
+                        "ffff:ffff:ffff:ffff::",
+                        null,
+                        null
+                    ],
+                    [
+                        17,
+                        "be:f9:e8:3a:e3:51",
+                        null,
+                        "ff:ff:ff:ff:ff:ff",
+                        null
+                    ]
+                ],
+                "vethc56ee6b": [
+                    [
+                        10,
+                        "fe80::e89f:dcff:fe1c:77b4%vethc56ee6b",
+                        "ffff:ffff:ffff:ffff::",
+                        null,
+                        null
+                    ],
+                    [
+                        17,
+                        "ea:9f:dc:1c:77:b4",
+                        null,
+                        "ff:ff:ff:ff:ff:ff",
+                        null
+                    ]
+                ],
+                "veth94b0ecc": [
+                    [
+                        10,
+                        "fe80::20bf:94ff:fea9:c00f%veth94b0ecc",
+                        "ffff:ffff:ffff:ffff::",
+                        null,
+                        null
+                    ],
+                    [
+                        17,
+                        "22:bf:94:a9:c0:0f",
+                        null,
+                        "ff:ff:ff:ff:ff:ff",
+                        null
+                    ]
+                ],
+                "vethe8592b5": [
+                    [
+                        10,
+                        "fe80::b025:caff:fe5d:ca95%vethe8592b5",
+                        "ffff:ffff:ffff:ffff::",
+                        null,
+                        null
+                    ],
+                    [
+                        17,
+                        "b2:25:ca:5d:ca:95",
+                        null,
+                        "ff:ff:ff:ff:ff:ff",
+                        null
+                    ]
+                ],
+                "veth93d5c86": [
+                    [
+                        10,
+                        "fe80::18af:5cff:fefd:972d%veth93d5c86",
+                        "ffff:ffff:ffff:ffff::",
+                        null,
+                        null
+                    ],
+                    [
+                        17,
+                        "1a:af:5c:fd:97:2d",
+                        null,
+                        "ff:ff:ff:ff:ff:ff",
+                        null
+                    ]
+                ],
+                "veth9c12671": [
+                    [
+                        10,
+                        "fe80::fce8:98ff:fe08:ac23%veth9c12671",
+                        "ffff:ffff:ffff:ffff::",
+                        null,
+                        null
+                    ],
+                    [
+                        17,
+                        "fe:e8:98:08:ac:23",
+                        null,
+                        "ff:ff:ff:ff:ff:ff",
+                        null
+                    ]
+                ],
+                "vethe63bc8e": [
+                    [
+                        10,
+                        "fe80::5cd9:cfff:fe8d:3b86%vethe63bc8e",
+                        "ffff:ffff:ffff:ffff::",
+                        null,
+                        null
+                    ],
+                    [
+                        17,
+                        "5e:d9:cf:8d:3b:86",
+                        null,
+                        "ff:ff:ff:ff:ff:ff",
+                        null
+                    ]
+                ],
+                "vethc6419f0": [
+                    [
+                        10,
+                        "fe80::54ef:9cff:fe9a:aef5%vethc6419f0",
+                        "ffff:ffff:ffff:ffff::",
+                        null,
+                        null
+                    ],
+                    [
+                        17,
+                        "56:ef:9c:9a:ae:f5",
+                        null,
+                        "ff:ff:ff:ff:ff:ff",
+                        null
+                    ]
+                ],
+                "veth693abe4": [
+                    [
+                        10,
+                        "fe80::c4ec:e7ff:fe2d:5627%veth693abe4",
+                        "ffff:ffff:ffff:ffff::",
+                        null,
+                        null
+                    ],
+                    [
+                        17,
+                        "c6:ec:e7:2d:56:27",
+                        null,
+                        "ff:ff:ff:ff:ff:ff",
+                        null
+                    ]
+                ],
+                "veth5f89fa8": [
+                    [
+                        10,
+                        "fe80::8cee:58ff:fe25:7650%veth5f89fa8",
+                        "ffff:ffff:ffff:ffff::",
+                        null,
+                        null
+                    ],
+                    [
+                        17,
+                        "8e:ee:58:25:76:50",
+                        null,
+                        "ff:ff:ff:ff:ff:ff",
+                        null
+                    ]
+                ],
+                "veth2179add": [
+                    [
+                        10,
+                        "fe80::4c9f:20ff:fe78:e079%veth2179add",
+                        "ffff:ffff:ffff:ffff::",
+                        null,
+                        null
+                    ],
+                    [
+                        17,
+                        "4e:9f:20:78:e0:79",
+                        null,
+                        "ff:ff:ff:ff:ff:ff",
+                        null
+                    ]
+                ],
+                "vethe6b29b8": [
+                    [
+                        10,
+                        "fe80::6021:41ff:fea4:c6e2%vethe6b29b8",
+                        "ffff:ffff:ffff:ffff::",
+                        null,
+                        null
+                    ],
+                    [
+                        17,
+                        "62:21:41:a4:c6:e2",
+                        null,
+                        "ff:ff:ff:ff:ff:ff",
+                        null
+                    ]
+                ],
+                "veth15611ab": [
+                    [
+                        10,
+                        "fe80::587c:adff:fe63:e01a%veth15611ab",
+                        "ffff:ffff:ffff:ffff::",
+                        null,
+                        null
+                    ],
+                    [
+                        17,
+                        "5a:7c:ad:63:e0:1a",
+                        null,
+                        "ff:ff:ff:ff:ff:ff",
+                        null
+                    ]
+                ],
+                "vetha21fa13": [
+                    [
+                        10,
+                        "fe80::a84a:c7ff:fe5a:7b27%vetha21fa13",
+                        "ffff:ffff:ffff:ffff::",
+                        null,
+                        null
+                    ],
+                    [
+                        17,
+                        "aa:4a:c7:5a:7b:27",
+                        null,
+                        "ff:ff:ff:ff:ff:ff",
+                        null
+                    ]
+                ],
+                "veth85a5aa5": [
+                    [
+                        10,
+                        "fe80::e833:29ff:fe3e:cc8%veth85a5aa5",
+                        "ffff:ffff:ffff:ffff::",
+                        null,
+                        null
+                    ],
+                    [
+                        17,
+                        "ea:33:29:3e:0c:c8",
+                        null,
+                        "ff:ff:ff:ff:ff:ff",
+                        null
+                    ]
+                ],
+                "veth527b100": [
+                    [
+                        10,
+                        "fe80::4468:5aff:fee7:ec81%veth527b100",
+                        "ffff:ffff:ffff:ffff::",
+                        null,
+                        null
+                    ],
+                    [
+                        17,
+                        "46:68:5a:e7:ec:81",
+                        null,
+                        "ff:ff:ff:ff:ff:ff",
+                        null
+                    ]
+                ],
+                "veth030f09a": [
+                    [
+                        10,
+                        "fe80::5c40:cdff:fe1e:9a79%veth030f09a",
+                        "ffff:ffff:ffff:ffff::",
+                        null,
+                        null
+                    ],
+                    [
+                        17,
+                        "5e:40:cd:1e:9a:79",
+                        null,
+                        "ff:ff:ff:ff:ff:ff",
+                        null
+                    ]
+                ],
+                "veth89fb047": [
+                    [
+                        10,
+                        "fe80::c4e6:11ff:feb5:e83%veth89fb047",
+                        "ffff:ffff:ffff:ffff::",
+                        null,
+                        null
+                    ],
+                    [
+                        17,
+                        "c6:e6:11:b5:0e:83",
+                        null,
+                        "ff:ff:ff:ff:ff:ff",
+                        null
+                    ]
+                ]
+            },
+            "connections": 51
+        },
+        "python": {
+            "version": "3.12.7",
+            "implementation": "CPython",
+            "compiler": "Clang 18.1.8 ",
+            "executable": "/home/blahaj/src/infer-bench/.venv/bin/python"
+        },
+        "env": {
+            "XDG_SESSION_PATH": "/org/freedesktop/DisplayManager/Session0",
+            "__GLX_VENDOR_LIBRARY_NAME": "nvidia",
+            "CSF_OCCTResourcePath": "/usr/share/opencascade/resources",
+            "CUDA_PATH": "/opt/cuda",
+            "XDG_SEAT_PATH": "/org/freedesktop/DisplayManager/Seat0",
+            "QT_PLUGIN_PATH": "/tmp/.mount_cursorZs5XLl/usr/lib/qt4/plugins/:/tmp/.mount_cursorZs5XLl/usr/lib/i386-linux-gnu/qt4/plugins/:/tmp/.mount_cursorZs5XLl/usr/lib/x86_64-linux-gnu/qt4/plugins/:/tmp/.mount_cursorZs5XLl/usr/lib/aarch64-linux-gnu/qt4/plugins/:/tmp/.mount_cursorZs5XLl/usr/lib32/qt4/plugins/:/tmp/.mount_cursorZs5XLl/usr/lib64/qt4/plugins/:/tmp/.mount_cursorZs5XLl/usr/lib/qt5/plugins/:/tmp/.mount_cursorZs5XLl/usr/lib/i386-linux-gnu/qt5/plugins/:/tmp/.mount_cursorZs5XLl/usr/lib/x86_64-linux-gnu/qt5/plugins/:/tmp/.mount_cursorZs5XLl/usr/lib/aarch64-linux-gnu/qt5/plugins/:/tmp/.mount_cursorZs5XLl/usr/lib32/qt5/plugins/:/tmp/.mount_cursorZs5XLl/usr/lib64/qt5/plugins/:",
+            "_OLD_VIRTUAL_PATH": "/home/blahaj/.cursor/extensions/ms-python.python-2024.12.3-linux-x64/python_files/deactivate/fish:/home/blahaj/src/moe-ft/.venv/bin:/home/blahaj/.cursor/extensions/ms-python.python-2024.12.3-linux-x64/python_files/deactivate/fish:/home/blahaj/src/moe-ft/.venv/bin:/home/blahaj/.cursor/extensions/ms-python.python-2024.12.3-linux-x64/python_files/deactivate/fish:/home/blahaj/src/moe-ft/.venv/bin:/tmp/.mount_cursorZs5XLl/usr/bin/:/tmp/.mount_cursorZs5XLl/usr/sbin/:/tmp/.mount_cursorZs5XLl/usr/games/:/tmp/.mount_cursorZs5XLl/bin/:/tmp/.mount_cursorZs5XLl/sbin/:/home/blahaj/.local/share/nvm/v23.4.0/bin:/home/blahaj/.local/bin:/usr/local/bin:/usr/bin:/bin:/usr/local/sbin:/opt/cuda/bin:/opt/cuda/nsight_compute:/opt/cuda/nsight_systems/bin:/usr/lib/jvm/default/bin:/usr/bin/site_perl:/usr/bin/vendor_perl:/usr/bin/core_perl:/var/lib/snapd/snap/bin",
+            "PATH": "/home/blahaj/src/infer-bench/.venv/bin:/home/blahaj/.cursor/extensions/ms-python.python-2024.12.3-linux-x64/python_files/deactivate/fish:/home/blahaj/src/moe-ft/.venv/bin:/home/blahaj/.cursor/extensions/ms-python.python-2024.12.3-linux-x64/python_files/deactivate/fish:/home/blahaj/src/moe-ft/.venv/bin:/home/blahaj/.cursor/extensions/ms-python.python-2024.12.3-linux-x64/python_files/deactivate/fish:/home/blahaj/src/moe-ft/.venv/bin:/tmp/.mount_cursorZs5XLl/usr/bin/:/tmp/.mount_cursorZs5XLl/usr/sbin/:/tmp/.mount_cursorZs5XLl/usr/games/:/tmp/.mount_cursorZs5XLl/bin/:/tmp/.mount_cursorZs5XLl/sbin/:/home/blahaj/.local/share/nvm/v23.4.0/bin:/home/blahaj/.local/bin:/usr/local/bin:/usr/bin:/bin:/usr/local/sbin:/opt/cuda/bin:/opt/cuda/nsight_compute:/opt/cuda/nsight_systems/bin:/usr/lib/jvm/default/bin:/usr/bin/site_perl:/usr/bin/vendor_perl:/usr/bin/core_perl:/var/lib/snapd/snap/bin",
+            "LD_LIBRARY_PATH": "/tmp/.mount_cursorZs5XLl/usr/lib/:/tmp/.mount_cursorZs5XLl/usr/lib32/:/tmp/.mount_cursorZs5XLl/usr/lib64/:/tmp/.mount_cursorZs5XLl/lib/:/tmp/.mount_cursorZs5XLl/lib/i386-linux-gnu/:/tmp/.mount_cursorZs5XLl/lib/x86_64-linux-gnu/:/tmp/.mount_cursorZs5XLl/lib/aarch64-linux-gnu/:/tmp/.mount_cursorZs5XLl/lib32/:/tmp/.mount_cursorZs5XLl/lib64/:"
+        },
+        "gpu": [
+            {
+                "name": "NVIDIA GeForce RTX 2080",
+                "memory_total_mb": 8192.0,
+                "memory_free_mb": 1270.0,
+                "memory_used_mb": 6516.0,
+                "temperature_c": 55.0,
+                "utilization_percent": 1.0
+            }
+        ]
+    }
+}
