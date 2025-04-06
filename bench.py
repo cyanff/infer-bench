@@ -53,6 +53,11 @@ def parse_args() -> BenchmarkConfig:
     parser.add_argument("--max-completion", type=int, default=250)
     parser.add_argument("--min-cd", type=int, default=7)
     parser.add_argument("--max-cd", type=int, default=14)
+    parser.add_argument(
+        "--enable-warmup",
+        action="store_true",
+        help="Skip the first turn in each conversation for result metrics",
+    )
 
     parser.add_argument(
         "--tokenizer",
@@ -110,6 +115,7 @@ def parse_args() -> BenchmarkConfig:
         time=args.time,
         dataset_file=args.dataset_file,
         served_model_name=args.served_model_name,
+        enable_warmup=args.enable_warmup,
     )
 
 
@@ -131,6 +137,7 @@ async def main():
         max_completion=cfg.max_completion,
         served_model_name=cfg.served_model_name,
         dataset_file=cfg.dataset_file,
+        enable_warmup=cfg.enable_warmup,
     )
     sim_res = await sim.boot()
     res = process_result(result=sim_res, tokenizer=tokenizer)

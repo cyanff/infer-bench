@@ -18,3 +18,4 @@ class BenchmarkConfig:
     time: int
     dataset_file: Optional[str] = None
     served_model_name: Optional[str] = None
+    enable_warmup: bool = False

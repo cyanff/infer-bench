@@ -82,6 +82,7 @@ class Simulation:
     max_prompt: int = 5000
     served_model_name: Optional[str] = None
     dataset_file: Optional[str] = None
+    enable_warmup: bool = False
 
     def __post_init__(self):
         # NEW: Make cache key unique to dataset (safe even if file is missing)
@@ -177,18 +178,21 @@ class Simulation:
                 max_new_tokens=max_new_tokens,
                 served_model_name=self.served_model_name or self.model,
             )
-            self.turn_results.append(
-                SimulationTurnResult(
-                    completion=res.text,
-                    prompt=prompt,
-                    prompt_len=prompt_len,
-                    success=res.success,
-                    latency=res.latency,
-                    ttft=res.ttft,
-                    itl=res.itl,
-                    error=res.error,
+            
+            # Skip adding first turn result if warmup is enabled
+            if not (self.enable_warmup and i == 0):
+                self.turn_results.append(
+                    SimulationTurnResult(
+                        completion=res.text,
+                        prompt=prompt,
+                        prompt_len=prompt_len,
+                        success=res.success,
+                        latency=res.latency,
+                        ttft=res.ttft,
+                        itl=res.itl,
+                        error=res.error,
+                    )
                 )
-            )
 
     def _prepare(self) -> List[List[SimulationTurn]]:
         """
