@@ -164,11 +164,6 @@ class Simulation:
             if i > 0:
                 await asyncio.sleep(cd)
 
-            # NEW: Print out the prompt before sending to VLLM
-            print("\n=== Prompt to VLLM ===")
-            print(prompt)
-            print("======================\n")
-
             # Make the request
             res = await request(
                 session=session,
@@ -178,7 +173,7 @@ class Simulation:
                 max_new_tokens=max_new_tokens,
                 served_model_name=self.served_model_name or self.model,
             )
-            
+
             # Skip adding first turn result if warmup is enabled
             if not (self.enable_warmup and i == 0):
                 self.turn_results.append(
@@ -213,28 +208,38 @@ class Simulation:
                 f"{self.tokenizer.__class__.__name__}, model_max_length: {self.tokenizer.model_max_length}"
             )
         except Exception as e:
-            print(f"[{time.time() - start_time:.2f}s] Failed to get tokenizer info: {str(e)}")
+            print(
+                f"[{time.time() - start_time:.2f}s] Failed to get tokenizer info: {str(e)}"
+            )
 
         # Fetch 1000 conversations from data
         print(f"[{time.time() - start_time:.2f}s] Getting conversations")
         conversations = get_conversations(1000, dataset_file=self.dataset_file)
-        print(f"[{time.time() - start_time:.2f}s] Got {len(conversations)} conversations")
+        print(
+            f"[{time.time() - start_time:.2f}s] Got {len(conversations)} conversations"
+        )
 
         processed: List[List[SimulationTurn]] = []
 
         # Read from cache if available
         print(f"[{time.time() - start_time:.2f}s] Checking cache")
         if self.cache:
-            print(f"[{time.time() - start_time:.2f}s] Reading from cache key: {self.cache_key}")
+            print(
+                f"[{time.time() - start_time:.2f}s] Reading from cache key: {self.cache_key}"
+            )
             cached = self.cache.get(self.cache_key) or []
             cached_len = len(cached)
-            print(f"[{time.time() - start_time:.2f}s] Cache read, found {cached_len} items")
+            print(
+                f"[{time.time() - start_time:.2f}s] Cache read, found {cached_len} items"
+            )
 
             if cached_len > 0:
                 # Convert cached data to SimulationTurn
                 for i, convo_turns in enumerate(cached):
                     if i % 100 == 0 and i > 0:
-                        print(f"[{time.time() - start_time:.2f}s] Processed {i}/{cached_len} cached convos")
+                        print(
+                            f"[{time.time() - start_time:.2f}s] Processed {i}/{cached_len} cached convos"
+                        )
                     sim_turns: List[SimulationTurn] = []
                     for turn in convo_turns:
                         try:
@@ -256,10 +261,14 @@ class Simulation:
                             )
                     processed.append(sim_turns)
 
-                print(f"[{time.time() - start_time:.2f}s] Simulation turns cache hit! Len: {len(processed)}")
+                print(
+                    f"[{time.time() - start_time:.2f}s] Simulation turns cache hit! Len: {len(processed)}"
+                )
 
         offset = len(processed)
-        print(f"[{time.time() - start_time:.2f}s] Starting to process {len(conversations) - offset} new conversations")
+        print(
+            f"[{time.time() - start_time:.2f}s] Starting to process {len(conversations) - offset} new conversations"
+        )
 
         # Force GC before heavy processing
         gc.collect()
@@ -310,7 +319,9 @@ class Simulation:
                     # If this is a GPT turn, do the decode => produce a SimulationTurn
                     if turn.from_ == "gpt":
                         # NEW/CHANGED: Truncate in blocks of 800 tokens, ignoring system prompt
-                        truncate_context(context, system_tokens, self.max_prompt, block_size=800)
+                        truncate_context(
+                            context, system_tokens, self.max_prompt, block_size=800
+                        )
 
                         # Now decode combined system + context
                         queue_list = list(context.queue)
@@ -337,7 +348,9 @@ class Simulation:
                 processed.append(simulation_turns)
 
             except Exception as e:
-                print(f"[{time.time() - start_time:.2f}s] Error processing conversation {i}: {str(e)}")
+                print(
+                    f"[{time.time() - start_time:.2f}s] Error processing conversation {i}: {str(e)}"
+                )
 
         print(
             f"[{time.time() - start_time:.2f}s] Processing complete, "
@@ -351,6 +364,8 @@ class Simulation:
                 self.cache.set(self.cache_key, processed)
                 print(f"[{time.time() - start_time:.2f}s] Cache save complete")
             except Exception as e:
-                print(f"[{time.time() - start_time:.2f}s] Failed to save to cache: {str(e)}")
+                print(
+                    f"[{time.time() - start_time:.2f}s] Failed to save to cache: {str(e)}"
+                )
 
         return processed
